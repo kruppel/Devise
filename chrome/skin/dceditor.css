@@ -1,0 +1,55 @@
+description {
+  -moz-user-select: text;
+  cursor: text;
+  -moz-user-focus: normal;
+}
+
+#dce-devices-tree {
+  background-image: none;
+  background-color: rgb(69,67,78);
+  border: 1px solid rgb(42,42,53);
+}
+
+.url {
+  color: #0000ff;
+  cursor: pointer;
+  text-decoration: underline !important;
+}
+
+.url:hover {
+  color: #ff0000;
+}
+
+sb-drawer > .drawer-box > .drawer-content {
+  font-weight: normal;
+  height: 105px;
+}
+
+sb-multi-drawer > .drawer-box > .drawer-content-item {
+  height: 32px;
+}
+
+.folder-label {
+  font-weight: bold;
+  margin-top: 9px;
+}
+
+.sr-checkbox {
+  width: 75px;
+}
+
+.device-settings-button-box {
+  max-height: 28px;
+  padding: 5px;
+}
+
+#device-button-spacer {
+  height: 5px;
+}
+
+/* context menu binding */
+/*
+sb-device-edit-command {
+  -moz-binding: url("chrome://devise/content/bindings/deviceEditControl.xml#sb-device-edit-command");
+}
+*/

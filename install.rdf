@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+     xmlns:songbird="http://www.songbirdnest.com/2007/addon-metadata-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>devise@songbirdnest.com</em:id>
+    <em:type>2</em:type>
+    <em:name>Devise</em:name>
+    <em:version>1.0.0.0</em:version>
+    <em:creator>kurt</em:creator>
+
+    <em:description>A tool to edit device capabilities.</em:description>
+
+    <em:targetApplication>
+      <Description>
+        <em:id>songbird@songbirdnest.com</em:id>
+        <em:minVersion>1.7.3</em:minVersion>
+        <em:maxVersion>1.8.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    <em:requires>
+      <Description>
+        <em:id>msc@songbirdnest.com</em:id>
+        <em:minVersion>1.0.4.1700</em:minVersion>
+        <em:maxVersion>1.0.6.*</em:maxVersion>
+      </Description>
+    </em:requires>
+
+  </Description>
+</RDF>

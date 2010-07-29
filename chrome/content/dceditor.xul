@@ -1,0 +1,633 @@
+<?xml version="1.0"?>
+<!-- 
+/*
+ *=BEGIN SONGBIRD GPL
+ *
+ * This file is part of the Songbird web player.
+ *
+ * Copyright(c) 2005-2010 POTI, Inc.
+ * http://www.songbirdnest.com
+ *
+ * This file may be licensed under the terms of of the
+ * GNU General Public License Version 2 (the ``GPL'').
+ *
+ * Software distributed under the License is distributed
+ * on an ``AS IS'' basis, WITHOUT WARRANTY OF ANY KIND, either
+ * express or implied. See the GPL for the specific language
+ * governing rights and limitations.
+ *
+ * You should have received a copy of the GPL along with this
+ * program. If not, go to http://www.gnu.org/licenses/gpl.html
+ * or write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ *=END SONGBIRD GPL
+ */
+-->
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/content/bindings/bindings.css" type="text/css"?>
+<?xml-stylesheet href="chrome://songbird/skin/songbird.css" type="text/css"?>
+<?xml-stylesheet href="chrome://devise/skin/dceditor.css" type="text/css"?>
+
+<!DOCTYPE window [
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+  <!ENTITY % songbirdDTD SYSTEM "chrome://songbird/locale/songbird.dtd">
+  <!ENTITY % textcontextDTD SYSTEM "chrome://global/locale/textcontext.dtd">
+  %brandDTD;
+  %songbirdDTD;
+  %textcontextDTD;
+]>
+
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        id="devise-window" 
+        title="Devise"
+        onload="Devise.init();"
+        height="382"
+        width="475">
+
+  <vbox>
+    <notificationbox id="dce-restart" flex="1" />
+  </vbox>
+  <hbox id="dce-header" pack="end" style="padding-right:15px;" hidden="true">
+    <vbox pack="center" width="16" height="16">
+      <image id="dce-devicon-small"
+             src="chrome://songbird/skin/service-pane/icon-device.png"
+             width="16"
+             height="16" />
+    </vbox>
+    <label id="dce-header-name" value="" />
+  </hbox>
+  <deck id="dce-deck" selectedIndex="0">
+    <vbox id="page-1" pack="center">
+      <hbox pack="center">
+        <groupbox flex="1">
+          <caption label="Summary" />
+          <vbox>
+            <tree id="dce-devices-tree"
+                  enablecolumndrag="false"
+                  hidecolumnpicker="true"
+                  rows="5"
+                  seltype="single">
+              <treecols>
+                <treecol label="Device" 
+                         flex="1" />
+                <treecol id="deviceid"
+                         flex="1"
+                         hidden="true" />
+              </treecols>
+              <treechildren id="dce-devices" alternatingbackground="false">
+              </treechildren>
+            </tree>
+          </vbox>
+          <hbox style="padding:0px 28px;" pack="center">
+            <vbox pack="center" width="64" height="64">
+              <image id="dce-device-icon"
+                     src="chrome://songbird/skin/device/icon-generic-device.png"
+                     width="64"
+                     height="64" />
+            </vbox>
+            <groupbox pack="center">
+            <grid>
+              <columns>
+                <column width="105" />
+                <column width="150" />
+              </columns>
+              <rows>
+                <row>
+                  <label value="Name:" />
+                  <description id="dce-device-name1"></description>
+                </row>
+                <row>
+                  <label value="Manufacturer:" />
+                  <description id="dce-device-mfr"></description>
+                </row>
+                <row>
+                  <label value="Model:" />
+                  <description id="dce-device-model" editable="true"></description>
+                </row>
+                <row>
+                  <label value="Serial No.:" />
+                  <description id="dce-serial-no"></description>
+                </row>
+                <row>
+                  <label value="VID/PID:" />
+                  <description id="dce-descriptor"></description>
+                </row>
+              </rows>
+            </grid>
+            </groupbox>
+          </hbox>
+        </groupbox>
+      </hbox>
+      <vbox flex="1">
+        <spacer id="device-button-spacer" />
+        <hbox class="device-settings-button-box" pack="end">
+          <button id="dce-edit-button" 
+                  disabled="true"
+                  label="Edit" />
+        </hbox>
+      </vbox>
+    </vbox>
+    <vbox id="page-2" pack="center">
+      <vbox pack="center">
+      <groupbox>
+        <caption label="Media folders" />
+        <vbox>
+          <hbox style="margin-left:1px; margin-bottom:7px;" hidden="true">
+            <checkbox id="mount-only-checkbox" checked="false" />
+            <label id="mount-only-label" value="Mount only media folders" />
+          </hbox>
+        </vbox>
+        <vbox class="drawer-box">
+          <hbox id="music-folder" class="folder-box">
+            <checkbox class="folder-checkbox" checked="false" />
+            <label value="MUSIC" width="54" class="folder-label" />
+            <textbox flex="1" width="200" />
+            <button class="folder-search"
+                    image="chrome://devise/skin/folder-icon.png"
+                    oncommand="Devise._findFolder(event);" />
+          </hbox>
+          <hbox id="image-folder" class="folder-box">
+            <checkbox class="folder-checkbox" checked="false" />
+            <label value="PHOTO" width="54" class="folder-label" />
+            <textbox flex="1" width="200" />
+            <button class="folder-search"
+                    image="chrome://devise/skin/folder-icon.png"
+                    oncommand="Devise._findFolder(event);" />
+          </hbox>
+          <hbox id="playlist-folder" class="folder-box">
+            <checkbox class="folder-checkbox" checked="false" />
+            <label value="PLAYLIST" width="54" class="folder-label" />
+            <textbox flex="1" width="200" />
+            <button class="folder-search"
+                    image="chrome://devise/skin/folder-icon.png"
+                    oncommand="Devise._findFolder(event);" />
+          </hbox>
+        </vbox>
+      </groupbox>
+      <groupbox>
+        <caption label="Exclude folders" />
+        <sb-multi-drawer id="exclude-drawer-multi" class="dce-drawer-multi">
+          <hbox style="margin-left:20px">
+            <textbox class="exclude-textbox" flex="1" width="255" />
+            <button class="exclude-search" 
+                    image="chrome://devise/skin/folder-icon.png"
+                    oncommand="Devise._findFolder(event);" />
+            <button label="-" class="watch-folders-minus" sbtype="remove-drawer-item" />
+            <button label="+" class="watch-folders-plus" sbtype="add-drawer-item" />
+          </hbox>
+        </sb-multi-drawer>
+      </groupbox>
+      </vbox>
+      <vbox flex="1">
+        <spacer id="device-button-spacer" />
+        <hbox class="device-settings-button-box">
+          <button class="dce-prev-button"
+                  label="Back"
+                  oncommand="Devise._goBack(event);" />
+          <spacer flex="1" />
+          <button class="dce-next-button"
+                  label="Next"
+                  oncommand="Devise._goFwd(event);" />
+        </hbox>
+      </vbox>
+      <!--<hbox class="device-settings-button-box" pack="start">
+        <button class="prev_button" 
+                oncommand="Devise._goBack(event);" />
+        <button class="next_button" 
+                oncommand="Devise._goFwd(event);" />
+      </hbox>-->
+    </vbox>
+    <vbox id="page-3">
+      <vbox>
+        <groupbox flex="1">
+          <caption label="Audio formats" />
+          <hbox style="padding:3px;">
+            <checkbox id="mp3-caps-checkbox" class="caps-checkbox"
+                      mime="audio/mpeg" container="audio/mpeg" codec="audio/mpeg" />
+            <vbox id="mp3-format-drawer" class="drawer-box" flex="1">
+              <hbox id="mp3-header" align="center">
+                <label value="MP3" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button id="mp3-toggle" oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="mp3-br-box" align="center" style="margin-left:20px;" hidden="true">
+                <label value="Bit Rates (kbps)" style="padding-right:40px;" />
+                <label value="min" control="mp3-min-br" />
+                <textbox id="mp3-min-br" class="min-br" type="number" 
+                         min="8" max="160" 
+                         increment="1" width="50"	 
+                         wraparound="true" style="margin-right:25px;" /> 
+                <label value="max" control="mp3-max-br" />
+                <textbox id="mp3-max-br" class="max-br" type="number" 
+                         min="160" max="320" 
+                         increment="1" width="50" 
+                         wraparound="true" /> 
+              </hbox>
+              <hbox id="mp3-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+          <hbox style="padding:3px;">
+            <checkbox id="wma-caps-checkbox" class="caps-checkbox"
+                      mime="audio/x-ms-wma" container="video/x-ms-asf" codec="audio/x-ms-wma" />
+            <vbox id="wma-format-drawer" class="drawer-box" flex="1">
+              <hbox id="wma-header" align="center">
+                <label value="WMA" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="wma-br-box" align="center" style="margin-left:20px;" hidden="true">
+                <label value="Bit Rates (kbps)" style="padding-right:40px;" />
+                <label value="min" control="wma-min-br" />
+                <textbox id="wma-min-br" class="min-br" type="number" 
+                         min="8" max="160" 
+                         increment="1" width="50"
+                         wraparound="true" style="margin-right:25px;" /> 
+                <label value="max" control="wma-max-br" />
+                <textbox id="wma-max-br" class="max-br" type="number" 
+                         min="160" max="320" 
+                         increment="1" width="50" 
+                         wraparound="true" /> 
+              </hbox>
+              <hbox id="wma-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+          <hbox style="padding:3px;">
+            <checkbox id="m4p-caps-checkbox" class="caps-checkbox"
+                      mime="audio/aac" container="video/mp4" codec="audio/aac" />
+            <vbox id="m4p-format-drawer" class="drawer-box" flex="1">
+              <hbox id="m4p-header" align="center">
+                <label value="AAC/MP4" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="m4p-br-box" align="center" style="margin-left:20px;" hidden="true">
+                <label value="Bit Rates (kbps)" style="padding-right:40px;" />
+                <label value="min" control="m4p-min-br" />
+                <textbox id="m4p-min-br" class="min-br" type="number" 
+                         min="8" max="160" 
+                         increment="1" width="50" 
+                         wraparound="true" style="margin-right:25px;" /> 
+                <label value="max" control="m4p-max-br" />
+                <textbox id="m4p-max-br" class="max-br" type="number" 
+                         min="160" max="320" 
+                         increment="1" width="50" 
+                         wraparound="true" /> 
+              </hbox>
+              <hbox id="m4p-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+          <hbox style="padding:3px;">
+            <checkbox id="3gp-caps-checkbox" class="caps-checkbox"
+                      mime="audio/aac" container="video/3gpp" codec="audio/aac" />
+            <vbox id="3gp-format-drawer" class="drawer-box" flex="1">
+              <hbox id="3gp-header" align="center">
+                <label value="AAC/3GP" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="3gp-br-box" align="center" style="margin-left:20px;" hidden="true">
+                <label value="Bit Rates (kbps)" style="padding-right:40px;" />
+                <label value="min" control="3gp-min-br" />
+                <textbox id="3gp-min-br" class="min-br" type="number" 
+                         min="8" max="160" 
+                         increment="1" width="50" 
+                         wraparound="true" style="margin-right:25px;" /> 
+                <label value="max" control="3gp-max-br" />
+                <textbox id="3gp-max-br" class="max-br" type="number" 
+                         min="160" max="320" 
+                         increment="1" width="50" 
+                         wraparound="true" /> 
+              </hbox>
+              <hbox id="3gp-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+          <hbox style="padding:3px;">
+            <checkbox id="wav-caps-checkbox" class="caps-checkbox"
+                      mime="audio/x-wav" container="audio/x-wav" codec="audio/x-pcm-int" />
+            <vbox id="wav-format-drawer" class="drawer-box" flex="1">
+              <hbox id="wav-header" align="center">
+                <label value="WAV" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="wav-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+          <hbox style="padding:3px;">
+            <checkbox id="ogg-caps-checkbox" class="caps-checkbox"
+                      mime="application/ogg" container="application/ogg" codec="audio/x-vorbis" />
+            <vbox id="ogg-format-drawer" class="drawer-box" flex="1">
+              <hbox id="ogg-header" align="center">
+                <label value="OGG" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="ogg-br-box" align="center" style="margin-left:20px;" hidden="true">
+                <label value="Bit Rates (kbps)" style="padding-right:40px;" />
+                <label value="min" control="ogg-min-br" />
+                <textbox id="ogg-min-br" class="min-br" type="number" 
+                         min="8" max="160" 
+                         increment="1" width="50" 
+                         wraparound="true" style="margin-right:25px;" /> 
+                <label value="max" control="ogg-max-br" />
+                <textbox id="ogg-max-br" class="max-br" type="number" 
+                         min="160" max="320" 
+                         increment="1" width="50" 
+                         wraparound="true" /> 
+              </hbox>
+              <hbox id="ogg-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+          <hbox style="padding:3px;">
+            <checkbox id="flac-caps-checkbox" class="caps-checkbox"
+                      mime="audio/x-flac" container="" codec="audio/x-flac" />
+            <vbox id="flac-format-drawer" class="drawer-box" flex="1">
+              <hbox id="flac-header" align="center">
+                <label value="FLAC" style="font-weight:bold;padding:5px;" />
+                <spacer flex="1" />
+                <button oncommand="Devise._toggleFormatBox(event);" label="+" />
+              </hbox>
+              <hbox id="flac-br-box" align="center" style="margin-left:20px;" hidden="true">
+                <label value="Bit Rates (kbps)" style="padding-right:40px;" />
+                <label value="min" control="flac-min-br" />
+                <textbox id="flac-min-br" class="min-br" type="number"
+                         min="8" max="160" 
+                         increment="1" width="50" 
+                         wraparound="true" style="margin-right:25px;" />
+                <label value="max" control="flac-max-br" />
+                <textbox id="flac-max-br" class="max-br" type="number"
+                         min="160" max="320" 
+                         increment="1" width="50" 
+                         wraparound="true" />
+              </hbox>
+              <hbox id="flac-sr-box" align="center" class="sr-box" style="margin-top:10px;margin-left:20px;margin-bottom:20px;" hidden="true">
+                <label value="Sample Rates (Hz)" style="padding-right:15px;" />
+                <vbox align="center">
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="8000" value="8000" />
+                    <checkbox class="sr-checkbox" label="11025" value="11025" />
+                    <checkbox class="sr-checkbox" label="12000" value="12000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="16000" value="16000" />
+                    <checkbox class="sr-checkbox" label="22050" value="22050" />
+                    <checkbox class="sr-checkbox" label="24000" value="24000" />
+                  </hbox>
+                  <hbox align="center">
+                    <checkbox class="sr-checkbox" label="32000" value="32000" />
+                    <checkbox class="sr-checkbox" label="44100" value="44100" />
+                    <checkbox class="sr-checkbox" label="48000" value="48000" />
+                  </hbox>
+                </vbox>
+              </hbox>
+            </vbox>
+          </hbox>
+        </groupbox>
+        <spacer flex="1" />
+        <hbox class="device-settings-button-box" pack="end">
+          <button class="dce-back-button"
+                  label="Back"
+                  oncommand="Devise._goBack(event);" />
+          <spacer flex="1" />
+          <button class="dce-next-button" 
+                  label="Next"
+                  oncommand="Devise._goFwd(event);" />
+        </hbox>
+      </vbox>
+    </vbox>
+    <vbox id="page-4">
+      <vbox>
+        <groupbox flex="1">
+          <caption label="Image formats" />
+          <grid flex="1">
+            <columns>
+              <column flex="1" />
+              <column flex="1" />
+            </columns>
+            <rows>
+              <row>
+                <hbox style="padding:3px;">
+                  <checkbox id="jpeg-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/jpeg" />
+                  <vbox id="jpeg-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="jpeg-header" align="center">
+                      <label value="JPEG" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+                <hbox style="padding:3px;">
+                  <checkbox id="png-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/png" />
+                  <vbox id="png-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="png-header" align="center">
+                      <label value="PNG" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+              </row>
+              <row>
+                <hbox style="padding:3px;">
+                  <checkbox id="gif-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/gif" />
+                  <vbox id="gif-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="gif-header" align="center">
+                      <label value="GIF" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+                <hbox style="padding:3px;">
+                  <checkbox id="bmp-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/bmp" />
+                  <vbox id="bmp-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="bmp-header" align="center">
+                      <label value="BMP" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+              </row>
+              <row>
+                <hbox style="padding:3px;">
+                  <checkbox id="ico-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/x-icon" />
+                  <vbox id="ico-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="ico-header" align="center">
+                      <label value="ICO" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+                <hbox style="padding:3px;">
+                  <checkbox id="tiff-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/tiff" />
+                  <vbox id="tiff-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="tiff-header" align="center">
+                      <label value="TIFF" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+              </row>
+              <row>
+                <hbox style="padding:3px;">
+                  <checkbox id="pcd-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/x-photo-cd" />
+                  <vbox id="pcd-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="pcd-header" align="center">
+                      <label value="PHOTO CD" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+                <hbox style="padding:3px;">
+                  <checkbox id="pict-caps-checkbox" class="img-caps-checkbox"
+                            mime="image/pict" />
+                  <vbox id="pict-format-drawer" class="drawer-box" flex="1">
+                    <hbox id="pict-header" align="center">
+                      <label value="PICT" style="font-weight:bold;padding:5px;" />
+                    </hbox>
+                  </vbox>
+                </hbox>
+              </row>
+            </rows>
+          </grid>
+        </groupbox>
+        <hbox style="background-color:rgb(74,73,79); margin:5px; font-weight:bold; padding:3px;">
+          <checkbox id="playlist-support" style="margin-left:12px;"/>
+          <label value="Supports playlists?" style="font-size:12px; font-weight:bold;" />
+        </hbox>
+        <hbox class="device-settings-button-box">
+          <button class="dce-back-button"
+                  label="Back"
+                  oncommand="Devise._goBack(event);" />
+          <spacer flex="1" />
+          <button class="dce-hit-button"
+                  label="Done"
+                  oncommand="Devise._completeEdit();" />
+        </hbox>
+      </vbox>
+    </vbox>
+  </deck>
+
+  <script type="application/x-javascript" 
+          src="chrome://songbird/content/scripts/songbirdInterfaces.js"/>
+  <script type="application/x-javascript" 
+          src="chrome://songbird/content/scripts/sbDataRemoteUtils.js"/>
+  <script type="application/x-javascript"
+          src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript"
+          src="main.js"/>
+
+</window>
