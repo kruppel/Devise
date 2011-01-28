@@ -122,7 +122,11 @@
       </hbox>
       <vbox flex="1">
         <spacer id="device-button-spacer" />
-        <hbox class="device-settings-button-box" pack="end">
+        <hbox class="device-settings-button-box">
+          <button id="dce-reset-button" 
+                  disabled="true"
+                  label="Reset" />
+          <spacer flex="1" />
           <button id="dce-edit-button" 
                   disabled="true"
                   label="Edit" />
@@ -472,7 +476,7 @@
                          wraparound="true" style="margin-right:25px;" />
                 <label value="max" control="flac-max-br" />
                 <textbox id="flac-max-br" class="max-br" type="number"
-                         min="160" max="320" 
+                         min="160" max="1411" 
                          increment="1" width="50" 
                          wraparound="true" />
               </hbox>

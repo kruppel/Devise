@@ -130,11 +130,15 @@ Devise = {
     this._deck = document.getElementById("dce-deck");
     this._deviceTree = document.getElementById("dce-devices-tree");
     this._editButton = document.getElementById("dce-edit-button");
+    this._resetButton = document.getElementById("dce-reset-button");
     this._headerName = document.getElementById("dce-header-name");
 
     // Wire up UI events for Summary buttons
     this._editButton.addEventListener('command',
       function(event) { self._onEditClick(event); }, false);
+
+    this._resetButton.addEventListener('command',
+      function(event) { self._onResetClick(event); }, false);
 
     // Wire up device treeitem selection
     this._deviceTree.addEventListener('select', 
@@ -268,6 +272,9 @@ Devise = {
 
     if (this._editButton.disabled)
       this._editButton.disabled = false;
+
+    if (this._resetButton.disabled)
+      this._resetButton.disabled = false;
 
     var row = this._deviceTree.currentIndex;
     this._deviceID = this._deviceTree
@@ -530,6 +537,71 @@ Devise = {
       if (excludeArray[i+1] != null)
         excludeDrawer.addItem(true, null, null);
     }
+  },
+
+  /**
+   * \brief Listens to reset button events.
+   *
+   * \param aEvent           The event that triggers the reset.
+   */
+  _onResetClick: function Devise__onResetClick(aEvent) {
+    if (!this._device || !this._device.id)
+      return Cu.reportError("No device to act on.");
+
+    var dirs = Cc["@songbirdnest.com/moz/xpcom/threadsafe-array;1"]
+                 .createInstance(Ci.nsIMutableArray);
+
+    var profd = Cc["@mozilla.org/file/directory_service;1"]
+                  .getService(Ci.nsIProperties)
+                  .get("ProfD", Ci.nsIFile);
+
+    var paths = ["db", "devices"]
+    for each (path in paths) {
+      let dir = profd.clone();
+      dir.append(path);
+      dirs.appendElement(dir, false);
+    }
+
+    var id = this._device.id.toString();
+    id = id.replace(/[{}-]/g, "");
+
+    var direnum = dirs.enumerate();
+    while (direnum.hasMoreElements()) {
+      let dir = direnum.getNext();
+      let entries = dir.directoryEntries;
+      if (!entries)
+        continue;
+      while (entries.hasMoreElements()) {
+        let entry = entries.getNext();
+        entry.QueryInterface(Ci.nsIFile);
+        if (entry.path.indexOf(id) != -1)
+          entry.remove(true);
+      }
+    }
+
+    var hidden = false;
+    var done = false;
+
+    while (!done) {
+      var sbs = Cc["@mozilla.org/file/local;1"]
+                  .createInstance(Ci.nsILocalFile);
+      var sbspath = this._folderPath + this._platformSeparator;
+
+      if (hidden) {
+        sbspath += ".";
+        done = true;
+      } else {
+        hidden = true;
+      }
+
+      sbspath += "SBSettings.xml";
+
+      sbs.initWithPath(sbspath);
+      if (sbs.exists())
+        sbs.remove(false);
+    }
+    
+    this._showRestartNotification("Reset will take effect after a restart.", "PRIORITY_WARNING_HIGH");
   },
 
   /**
@@ -1119,16 +1191,27 @@ Devise = {
    * \param
    */
   _startNotificationListener: function Devise__startNotificationListener(aNbox) {
+    var initialized = false;
+    var oldHeight = 0;
+    var origNboxHeight = 0;
     var func = function() { 
                  var re = /(\d+)px/;
 
                  var nboxh = window.getComputedStyle(aNbox, null).getPropertyValue("height");
                  nboxh = parseInt(nboxh.replace(re, "$1"));
 
-                 window.resizeTo(475, nboxh + 345);
+                 var outerHeight = window.outerHeight;
+                 if (!initialized) {
+                   initialized = true;
+                   oldHeight = outerHeight;
+                   origNboxHeight = nboxh;
+                   window.resizeTo(475, nboxh + outerHeight);
+                 } else if (origNboxHeight > nboxh) {
+                   window.resizeTo(475, oldHeight);
+                 }
                };
 
-    this._nboxInterval = window.setInterval(func, 250);
+    this._nboxInterval = window.setInterval(func, 200);
   },
 
   /**
@@ -1150,6 +1233,7 @@ Devise = {
    */
   onUnLoad: function() {
     deviceManager.QueryInterface(Ci.sbIDeviceEventTarget).removeEventListener(this._onMgrEvent);
+
     this._initialized = false;
   },
   
